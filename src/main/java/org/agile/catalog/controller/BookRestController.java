@@ -19,8 +19,8 @@ public class BookRestController {
 
     // GET /api/books/search?keyword=java
     @GetMapping("/api/books/search")
-    public List<Book> searchBooks(@RequestParam String keyword) {
-        return bookRepository.searchBooks(keyword);
+    public List<Book> searchBooks(@RequestParam List<String> keywords) {
+        return bookRepository.searchByKeywords(keywords);
     }
 
     // (Optional) endpoint to get all books
