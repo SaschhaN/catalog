@@ -17,21 +17,24 @@ class BookRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        bookRepository.deleteAll();
         bookRepository.save(new Book("9780132350884", "Clean Code", "A Handbook of Agile Software Craftsmanship", "Robert C. Martin"));
         bookRepository.save(new Book("9780134685991", "Effective Java", "Best practices for the Java platform", "Joshua Bloch"));
+        bookRepository.save(new Book("9780596007126", "Head First Design Patterns", "A brain-friendly guide", "Eric Freeman"));
     }
 
     @Test
-    void shouldFindBooksByKeywordInTitleOrDescriptionOrAuthor() {
-        List<Book> result = bookRepository.searchBooks("java");
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Effective Java");
+    void searchByKeywords_allKeywordsMustMatch_someMatch() {
+        // "java" appears in title of Effective Java, "platform" appears in description -> should match (AND)
+        List<Book> results = bookRepository.searchByKeywords(List.of("java", "platform"));
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getTitle()).isEqualTo("Effective Java");
     }
 
     @Test
-    void shouldReturnEmptyListWhenNoMatchFound() {
-        List<Book> result = bookRepository.searchBooks("python");
-        assertThat(result).isEmpty();
+    void searchByKeywords_allKeywordsMustMatch_noneMatch() {
+        // "java" matches Effective Java, but "easy" is not in any field -> no results expected
+        List<Book> results = bookRepository.searchByKeywords(List.of("java", "easy"));
+        assertThat(results).isEmpty();
     }
 }
