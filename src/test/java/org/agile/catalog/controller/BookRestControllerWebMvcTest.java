@@ -31,10 +31,10 @@ class BookRestControllerWebMvcTest {
         );
 
         // Mock repository behavior
-        Mockito.when(bookRepository.searchBooks("java")).thenReturn(books);
+        Mockito.when(bookRepository.searchByKeywords(List.of("java"))).thenReturn(books);
 
         mockMvc.perform(get("/api/books/search")
-                        .param("keyword", "java"))
+                        .param("keywords", "java"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title", is("Effective Java")))
                 .andExpect(jsonPath("$[0].author", is("Joshua Bloch")));

@@ -35,7 +35,7 @@ class BookRestControllerIntegrationTest {
 
     @Test
     void shouldReturnBooksFromSearchEndpoint() {
-        String url = "http://localhost:" + port + "/api/books/search?keyword=java";
+        String url = "http://localhost:" + port + "/api/books/search?keywords=java";
 
         ResponseEntity<Book[]> response = restTemplate.getForEntity(url, Book[].class);
 
