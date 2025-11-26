@@ -2,9 +2,8 @@ package org.agile.catalog.controller;
 
 import org.agile.catalog.data.Book;
 import org.agile.catalog.data.BookRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,6 +21,14 @@ public class BookRestController {
     public List<Book> searchBooks(@RequestParam List<String> keywords) {
         return bookRepository.searchByKeywords(keywords);
     }
+
+    @GetMapping("/api/books/isbn/{isbn}")
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+        return bookRepository.findByIsbn(isbn)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 
     // (Optional) endpoint to get all books
     @GetMapping("/api/books")

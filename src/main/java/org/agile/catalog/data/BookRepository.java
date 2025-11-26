@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long>, BookRepositoryCustom {
 
@@ -16,4 +17,5 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookRepositor
            OR LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
     List<Book> searchBooks(@Param("keyword") String keyword);
+    Optional<Book> findByIsbn(String isbn);
 }
