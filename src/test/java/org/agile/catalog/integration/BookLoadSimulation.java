@@ -17,7 +17,7 @@ public class BookLoadSimulation extends Simulation {
     ScenarioBuilder scn = scenario("Book API Load Test")
             .exec(
                     http("Search Books")
-                            .get("/api/books/search?keyword=java")
+                            .get("/api/books/search?keywords=java&keywords=effective")
                             .check(status().is(200))
             );
 
