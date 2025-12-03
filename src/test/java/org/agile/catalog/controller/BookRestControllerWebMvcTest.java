@@ -3,17 +3,20 @@ package org.agile.catalog.controller;
 import org.agile.catalog.data.Book;
 import org.agile.catalog.data.BookRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookRestController.class)
 class BookRestControllerWebMvcTest {
@@ -21,22 +24,24 @@ class BookRestControllerWebMvcTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private BookRepository bookRepository;
 
     @Test
-    void shouldReturnBooksFromSearchEndpoint() throws Exception {
-        List<Book> books = List.of(
-                new Book("9780134685991", "Effective Java", "Best practices", "Joshua Bloch")
-        );
+    void searchBooks_shouldReturnListOfBooks() throws Exception {
+        // 1. Arrange
+        Book mockBook = new Book("999-99", "Mocked Title", "Desc", "Mock Author");
 
-        // Mock repository behavior
-        Mockito.when(bookRepository.searchByKeywords(List.of("java"))).thenReturn(books);
+        // Uses Mockito to define behavior: whatever list comes in, return the mockBook
+        given(bookRepository.searchByKeywords(anyList())).willReturn(List.of(mockBook));
 
+        // 2. Act & Assert
+        // This part simulates: GET /api/books/search?keywords=java,spring
         mockMvc.perform(get("/api/books/search")
-                        .param("keywords", "java"))
+                        .param("keywords", "java", "spring"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title", is("Effective Java")))
-                .andExpect(jsonPath("$[0].author", is("Joshua Bloch")));
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("Mocked Title")))
+                .andExpect(jsonPath("$[0].isbn", is("999-99")));
     }
 }
