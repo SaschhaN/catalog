@@ -18,12 +18,12 @@ public class BookRestController {
 
     // GET /api/books/search?keyword=java
     @GetMapping("/api/books/search")
-    public List<Book> searchBooks(@RequestParam List<String> keywords) {
+    public List<Book> searchBooks(@RequestParam("keywords") List<String> keywords) {
         return bookRepository.searchByKeywords(keywords);
     }
 
     @GetMapping("/api/books/isbn/{isbn}")
-    public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
+    public ResponseEntity<Book> getBookByIsbn(@PathVariable("isbn") String isbn) {
         return bookRepository.findByIsbn(isbn)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

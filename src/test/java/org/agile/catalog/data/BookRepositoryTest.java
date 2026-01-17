@@ -4,12 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
+
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@ActiveProfiles("Test")
 class BookRepositoryTest {
 
     @Autowired
@@ -20,7 +23,6 @@ class BookRepositoryTest {
 
     @Test
     void searchByKeywords_shouldFindBook_whenAllKeywordsMatch_CaseInsensitive() {
-        //Creates specific scenarios in the DB
 
         // Match: Contains 'Java' (title) and 'Beginner' (description)
         Book match = new Book("978-1", "Learn Java", "Best for beginners", "Alice");
@@ -36,7 +38,8 @@ class BookRepositoryTest {
 
         entityManager.flush();
 
-        List<Book> results = bookRepository.searchByKeywords(List.of("JAVA", "beginner"));
+        List<Book> results =
+                bookRepository.searchByKeywords(List.of("JAVA", "beginner"));
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).getTitle()).isEqualTo("Learn Java");
@@ -50,10 +53,13 @@ class BookRepositoryTest {
 
     @Test
     void searchByKeywords_shouldSearchInAuthorField() {
-        Book authorMatch = new Book("978-4", "Coding 101", "General stuff", "Martin Fowler");
+        Book authorMatch =
+                new Book("978-4", "Coding 101", "General stuff", "Martin Fowler");
         entityManager.persist(authorMatch);
+        entityManager.flush();
 
-        List<Book> results = bookRepository.searchByKeywords(List.of("Fowler"));
+        List<Book> results =
+                bookRepository.searchByKeywords(List.of("Fowler"));
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).getAuthor()).isEqualTo("Martin Fowler");
